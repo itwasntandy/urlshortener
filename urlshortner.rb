@@ -1,13 +1,12 @@
 require 'sinatra'
 require 'mysql2'
 require './dbquery.rb'
-require 'zlib'
 
 
 begin
       approot = File.expand_path(File.dirname(__FILE__))
-        rawconfig = File.read(approot + "/config.yml")
-          config = YAML.load(rawconfig)
+      rawconfig = File.read(approot + "/config.yml")
+      config = YAML.load(rawconfig)
 rescue
       raise "Could not load or parse configuration file, unable to continue"
 end
@@ -21,7 +20,7 @@ def add_shortcode(url,dbquery)
      # check if url already exists
        shortcode = dbquery.retrieve_shortcode(url)
        if (shortcode == nil)
-         shortcode = Zlib::crc32(url)
+         shortcode = rand(49**7).to_s(36)
          dbquery.insert_url(shortcode,url)
        end
        return shortcode
@@ -32,22 +31,15 @@ post '/s/' do
     url = params[:url]
     @shortcode = add_shortcode(url,dbquery)
     erb :short
-    #return response
 end
 
 get '/s/*' do 
-    #url = params[:captures]
-    #protocol = params[:splat].first
-    #puts protocol
-    #address = params[:splat][1..-1].join('/')
-    #puts address
     url = params[:splat][0]
 
     if (url == '')
         erb :default
     else 
       url.sub! 'http:/', 'http://'
-    # check if url already exists
       @shortcode = add_shortcode(url,dbquery)
       erb :short
     end

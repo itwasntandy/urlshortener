@@ -1,7 +1,7 @@
 require 'sinatra'
 require 'mysql2'
 require './dbquery.rb'
-
+#require 'zlib'
 
 begin
       approot = File.expand_path(File.dirname(__FILE__))
@@ -48,6 +48,7 @@ end
 get '/l/:shortcode' do |shortcode|
     url = dbquery.retrieve_url(shortcode)
     if (url !=nil)
+        dbquery.shortcode_use(shortcode)
         redirect to(url)
     else
         return "No shortcode found"

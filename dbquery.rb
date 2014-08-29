@@ -25,6 +25,12 @@ class DBQuery
         dbclient.query("insert into urls(url,shortcode) values('#{url}','#{shortcode}')") rescue nil
         dbclient.last_id rescue nil
     end
+    def shortcode_use(shortcode)
+        dbclient.query("insert into shortcodeusage(shortcode) values ('#{shortcode}')") rescue nil
+    end
+    def get_counters(shortcode)
+        dbclient.query("select count(1) from shortcodeusage where shortcode='#{shortcode}'") rescue nil
+    end
 
 end
 

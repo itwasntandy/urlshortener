@@ -1,31 +1,33 @@
 require 'sinatra'
 require 'mysql2'
 require './dbquery.rb'
-#require 'zlib'
 
 begin
-      approot = File.expand_path(File.dirname(__FILE__))
-      rawconfig = File.read(approot + "/config.yml")
-      config = YAML.load(rawconfig)
+    approot = File.expand_path(File.dirname(__FILE__))
+    rawconfig = File.read(approot + "/config.yml")
+    config = YAML.load(rawconfig)
 rescue
-      raise "Could not load or parse configuration file, unable to continue"
+    raise "Could not load or parse configuration file, unable to continue"
 end
 if config.has_key?("database")
-      dbquery = DBQuery.new(config["database"])
+    dbquery = DBQuery.new(config["database"])
 else
     raise "Could not find DB config in config file, unable to continue"
 end
 
 def add_shortcode(url,dbquery)
-     # check if url already exists
-       shortcode = dbquery.retrieve_shortcode(url)
-       if (shortcode == nil)
-         shortcode = rand(49**7).to_s(36)
-         dbquery.insert_url(shortcode,url)
-       end
-       return shortcode
+    # check if url already exists
+    shortcode = dbquery.retrieve_shortcode(url)
+    if (shortcode == nil)
+        shortcode = rand(49**7).to_s(36)
+        dbquery.insert_url(shortcode,url)
+    end
+    return shortcode
 end
 
+get "/" do
+    redirect "/s/"
+end
 
 post '/s/' do
     url = params[:url]
